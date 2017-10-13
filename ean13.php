@@ -3,6 +3,9 @@
 /**
  * Class BarcodeEAN13
  * Create an EAN13 Barcode image.
+ *
+ * https://www.barcodingfonts.com/pdf/EAN.pdf
+ * https://www.stimulsoft.com/en/documentation/online/user-manual/index.html?report_internals_barcodes_linear_barcodes_ean_upc_based_ean-13.htm
  */
 class BarcodeEAN13
 {
@@ -70,8 +73,9 @@ class BarcodeEAN13
         else
             $this->scale = $scale;
         $len = strlen($number);
-        if ($len != 13 && $len != 12)
-            trigger_error('Barcode expects 12 or 13 digit number', E_USER_ERROR);
+        if ($len != 13 && $len != 12) {
+            throw new Exception('Barcode expects 12 or 13 digit number');
+        };
         /* The checksum (13th digit) can be calculated or supplied */
         $this->number = $number;
         if ($len === 12)
@@ -202,9 +206,12 @@ class BarcodeEAN13
     /**
      * Send the headers and display the barcode.
      */
-    public function display()
+    public function display($filename=null)
     {
-        header("Content-Type: image/png; name=\"barcode.png\"");
-        imagepng($this->_image);
+        if(empty($filename)) {
+            header("Content-Type: image/png; name=\"barcode.png\"");
+            $filename = null;
+        }
+        imagepng($this->_image, $filename);
     }
 }
