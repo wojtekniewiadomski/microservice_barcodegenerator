@@ -6,16 +6,24 @@
 </head>
 <body>
 <?php
+function rand13() {
+	$rand_a = rand(0, 999999);
+	$rand_b = rand(0, 9999999);
+	return sprintf('%d%d', ($rand_a > 0) ? $rand_a : '', $rand_b);
+}
+
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-    include_once 'ean13.php';
+    include_once 'BarcodeEAN13.php';
 
-    $value = rand(100000000000, 1000000000000);
-    $value = '0000000123456';
+    $fontFilePath = dirname(__FILE__) . '/FreeSansBold.ttf';
+    $value = rand13();
+    $value = '605589605589';
 
     try {
-        var_dump($value);
-        $barcode = new BarcodeEAN13((string)$value, 6);
+    	var_dump(strlen($value), $value);
+    	$barcode = new BarcodeEAN13($value, $fontFilePath, 6);
         $barcode->display('images/barcode_'.$value.'.png');
     }
     catch(Exception $e) {
