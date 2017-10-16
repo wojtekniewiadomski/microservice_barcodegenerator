@@ -160,13 +160,8 @@ class BarcodeEAN13
     }
     
     /**
-     * The following incantations use the parity key (based off the
-     * first digit of the unencoded number) to encode the first six
-     * digits of the barcode. The last 6 use the same parity.
-     *
-     * So, if the key is 010101, the first digit (of the first six
-     * digits) uses odd parity encoding. The second uses even. The
-     * third uses odd, and so on.
+     * The following incantations use the parity key (based off the first digit of the unencoded number) to encode the first six digits of the barcode. The last 6 use the same parity.
+     * So, if the key is 010101, the first digit (of the first six digits) uses odd parity encoding. The second uses even. The third uses odd, and so on.
      */
     protected function _encode()
     {
@@ -186,11 +181,10 @@ class BarcodeEAN13
         $barcode[] = self::$GUARD['end'];
         return $barcode;
     }
+    
     /**
      * Create the image.
-     *
-     * The Height is 60 times the scale and the width is simply
-     * 180% of the height.
+     * The Height is 60 times the scale and the width is simply 180% of the height.
      */
     protected function _createImage()
     {
@@ -242,13 +236,8 @@ class BarcodeEAN13
     /**
      * Draw the text:
      *
-     * The first digit is left of the first guard. The kerning
-     * is how much space is in between the individual characters.
-     *
-     * We add kerning after the first character to skip over the
-     * first guard. Then we do it again after the 6th character
-     * to skip over the second guard.
-     *
+     * The first digit is left of the first guard. The kerning is how much space is in between the individual characters.
+     * We add kerning after the first character to skip over the first guard. Then we do it again after the 6th character to skip over the second guard.
      * We don't need to skip over the last guard.
      *
      * The fontsize is 7 times the scale.
@@ -270,6 +259,7 @@ class BarcodeEAN13
             $x += $kerning;
         }
     }
+    
     /**
      * Return the barcode's image by reference.
      */
@@ -277,6 +267,7 @@ class BarcodeEAN13
     {
         return $this->image;
     }
+    
     /**
      * Send the headers and display the barcode.
      */
