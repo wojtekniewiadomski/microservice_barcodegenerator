@@ -19,11 +19,12 @@ ini_set('display_errors', 1);
 
     $fontFilePath = dirname(__FILE__) . '/FreeSansBold.ttf';
     $value = rand13();
-    $value = '605589605589';
+$value = '605589605589';
+$value = '170768';
 
     try {
     	var_dump(strlen($value), $value);
-    	$barcode = new BarcodeEAN13($value, $fontFilePath, 6);
+    	$barcode = new \Barcode\EAN13($value, $fontFilePath, 6);
         $barcode->display('images/barcode_'.$value.'.png');
     }
     catch(Exception $e) {
