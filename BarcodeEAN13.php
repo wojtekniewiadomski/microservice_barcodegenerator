@@ -17,6 +17,7 @@ class Ean13
 
     public $number;
 
+    /** @var float $scale */
     public $scale;
 
     /**
@@ -118,12 +119,12 @@ class Ean13
     }
 
     /**
-     * @param int $scale
-     * @return int
+     * @param float $scale
+     * @return float
      */
     protected function prepareScale($scale)
     {
-        $scale = intval($scale);
+        $scale = floatval($scale);
         if ($scale < 2) {
             $scale = 2;
         } elseif ($scale > 12) {
@@ -158,6 +159,9 @@ class Ean13
         $this->number = $this->prepareNumber($number);
         $this->scale = $this->prepareScale($scale);
 
+        $this->height = $this->scale * 60;
+        $this->width = 1.8 * $this->height;
+
         /* Get the parity key, which is based on the first digit. */
         $this->key = static::$parityMatrix['key'][substr($this->number, 0, 1)];
         $this->font = $this->prepareFont($fontpath);
@@ -166,10 +170,24 @@ class Ean13
         if (strlen($this->number) === 12) {
             $this->number .= $this->checksum($this->number);
         }
-        $this->bars = $this->encode();
-        $this->createImage();
-        $this->drawBars();
-        $this->drawText();
+    }
+
+    /**
+     * @param int $dimmWidth
+     * @param int $dimmHeight
+     */
+    public function setDimmensions($dimmWidth, $dimmHeight)
+    {
+        $dimmWidth = intval($dimmWidth);
+        $dimmHeight = intval($dimmHeight);
+
+        if ($dimmHeight > 0) {
+            $this->height = $dimmHeight;
+        }
+        if ($dimmWidth > 0) {
+            $this->width = $dimmWidth;
+        }
+        $this->scale = $this->prepareScale($this->width/(1.8 * 60));
     }
 
     public function __destruct()
@@ -202,8 +220,6 @@ class Ean13
      */
     protected function createImage()
     {
-        $this->height = $this->scale * 60;
-        $this->width = 1.8 * $this->height;
         $this->image = imagecreate($this->width, $this->height);
         imagecolorallocatealpha($this->image, 0xFF, 0xFF, 0xFF, $this->alpha);
     }
@@ -219,7 +235,7 @@ class Ean13
         $floorVerticalPos = $this->height * 0.825;
         $barWidth = $this->scale;
 
-        $coordX = ($this->height * 0.2) - $barWidth;
+        $coordX = ($this->width * 0.11) - $barWidth;
         foreach ($this->bars as $bar) {
             $tall = 0;
             if (strlen($bar) == 3 || strlen($bar) == 5) {
@@ -239,8 +255,8 @@ class Ean13
      */
     protected function drawText()
     {
-        $coordX = $this->width * 0.05;
-        $coordY = $this->height * 0.96;
+        $coordX = $this->width * 0.04;
+        $coordY = $this->height * 0.95;
         $textColor = imagecolorallocate($this->image, 0x00, 0x00, 0x00);
         $fontsize = $this->scale * 7;
         $kerning = $fontsize * 1;
@@ -262,20 +278,27 @@ class Ean13
     }
 
     /**
-     * @param string|null $filename
+     * Creating completed barcode image
+     */
+    public function create()
+    {
+        $this->bars = $this->encode();
+        $this->createImage();
+        $this->drawBars();
+        $this->drawText();
+    }
+
+    /**
+     * @param string $filename
      * @throws BarcodeException
      */
-    public function display($filename = null)
+    public function saveFile($filename)
     {
-        if (empty($filename)) {
-            header("Content-Type: image/png;");
-            $filename = null;
-        } else {
-            $dirPath = dirname($filename);
-            if (!file_exists($dirPath)) {
-                throw new BarcodeException('No such directory [' . $dirPath . ']');
-            }
+        $dirPath = dirname($filename);
+        if (!file_exists($dirPath)) {
+            throw new BarcodeException('No such directory [' . $dirPath . ']');
         }
         imagepng($this->image, $filename);
     }
 }
+
