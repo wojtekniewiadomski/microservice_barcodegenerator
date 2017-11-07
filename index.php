@@ -23,9 +23,14 @@ $value = '605589605589';
 $value = '170768';
 
     try {
-    	var_dump(strlen($value), $value);
     	$barcode = new \Barcode\EAN13($value, $fontFilePath, 6);
-        $barcode->display('images/barcode_'.$value.'.png');
+        $barcode->create();
+        $barcode->saveFile('images/barcode_'.$value.'.png');
+
+	$barcode = new \Barcode\Ean13($value, $fontFilePath);
+        $barcode->setDimmensions(620, 400);
+        $barcode->create();
+        $barcode->saveFile('images/barcode_'.$value.'_620x400.png');
     }
     catch(Exception $e) {
         var_dump(get_class($e), $e->getMessage());
